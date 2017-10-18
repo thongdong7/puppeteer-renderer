@@ -1,22 +1,38 @@
-'use strict';
+"use strict";
 
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
+
+function _delay(timeout) {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
 
 class Renderer {
   constructor(browser) {
     this.browser = browser;
   }
 
-  async createPage(url) {
+  async createPage(url, options) {
     const page = await this.browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle' });
+    await page.goto(url, { waitUntil: "networkidle" });
+
+    if (options.waitForSelector) {
+      console.log("wait for ", options.waitForSelector);
+      await page.waitForSelector(options.waitForSelector, { visible: true });
+    }
+
+    if (options.delay) {
+      await _delay(parseInt(options.delay, 10));
+    }
+
     return page;
   }
 
-  async render(url) {
+  async render(url, options) {
     let page = null;
     try {
-      page = await this.createPage(url);
+      page = await this.createPage(url, options);
       const html = await page.content();
       return html;
     } finally {
@@ -26,11 +42,11 @@ class Renderer {
     }
   }
 
-  async pdf(url) {
+  async pdf(url, options) {
     let page = null;
     try {
-      page = await this.createPage(url);
-      const buffer = await page.pdf({ format: 'A4' });
+      page = await this.createPage(url, options);
+      const buffer = await page.pdf({ format: "A4" });
       return buffer;
     } finally {
       if (page) {
@@ -39,10 +55,10 @@ class Renderer {
     }
   }
 
-  async screenshot(url) {
+  async screenshot(url, options) {
     let page = null;
     try {
-      page = await this.createPage(url);
+      page = await this.createPage(url, options);
       const buffer = await page.screenshot({ fullPage: true });
       return buffer;
     } finally {
@@ -54,7 +70,7 @@ class Renderer {
 }
 
 async function create() {
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
   return new Renderer(browser);
 }
 
