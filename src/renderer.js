@@ -18,7 +18,8 @@ class Renderer {
     await page.goto(url, { waitUntil: "networkidle" });
 
     const viewportWidth = options.viewportWidth ? parseInt(options.viewportWidth, 10) : 800;
-    await page.setViewport({ width: viewportWidth, height: 600, deviceScaleFactor: 1 });
+    const viewportHeight = options.viewportHeight ? parseInt(options.viewportHeight, 10) : 600;
+    await page.setViewport({ width: viewportWidth, height: viewportHeight, deviceScaleFactor: 1 });
 
     if (options.waitForSelector) {
       console.log("wait for ", options.waitForSelector);
