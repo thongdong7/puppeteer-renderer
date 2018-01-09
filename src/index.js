@@ -28,7 +28,7 @@ app.use(async (req, res, next) => {
 
   try {
     const options = {};
-    for (const field of ["waitForSelector", "delay", "viewportWidth"]) {
+    for (const field of ["waitForSelector", "delay", "viewportWidth", "viewportHeight"]) {
       if (req.query[field]) {
         options[field] = req.query[field];
       }
